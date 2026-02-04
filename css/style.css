@@ -249,14 +249,56 @@ textarea {
   justify-content: center;
   align-items: center;
   text-align: center;
+
+  /* Mobile-friendly layout */
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 16px;
+  box-sizing: border-box;
 }
 
+/* Prevent accidental horizontal scrolling on mobile */
+html,
+body {
+  overflow-x: hidden;
+}
+
+/* Make ALL images responsive by default */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Force your main image to be a consistent, phone-friendly size */
+.custom-image {
+  width: min(80vw, 280px);     /* same size across GIF/monkey/flower */
+  aspect-ratio: 1 / 1;         /* keeps a consistent box */
+  object-fit: contain;         /* never crop; just fit */
+}
+
+/* Give the moving button a safe "play area" that won't cause scrollbars */
 .buttons {
   display: inline-flex;
   gap: 12px;
   position: relative; /* "no" button will move within this box once absolute */
-  align-items: center; /* prevent vertical stretching */
+  align-items: center;
+
+  width: min(92vw, 360px);
+  height: 64px;              /* fixed height prevents vertical jump */
+  overflow: hidden;          /* crucial: prevents scrollbars from movement */
+  justify-content: center;
 }
+
+.yes-button,
+.no-button {
+  transform-origin: center;
+  max-width: 45%;
+}
+
+/* ... existing code ... */
 
 .no-button {
   position: static;
