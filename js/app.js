@@ -1,6 +1,5 @@
 let customImage = document.querySelector(".custom-image");
 
-// NO logic
 let noButton = document.querySelector(".no-button");
 noButton.addEventListener("click", noChange);
 
@@ -10,7 +9,6 @@ const NO_SHRINK_PER_CLICK = 0.10; // 10% smaller each NO click
 let yesScale = 1;
 let noScale = 1;
 
-// YES logic
 let yesButton = document.querySelector(".yes-button");
 yesButton.addEventListener("click", yesChange);
 

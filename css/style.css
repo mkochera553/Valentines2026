@@ -302,8 +302,6 @@ img {
   max-width: 45%;
 }
 
-/* ... existing code ... */
-
 .no-button {
   position: static;
 }
@@ -316,5 +314,5 @@ img {
 }
 
 body.yes-clicked {
-  background-color: pink; /* pick any color */
+  background-color: pink;
 }
