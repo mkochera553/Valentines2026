@@ -283,13 +283,17 @@ img {
 .buttons {
   display: inline-flex;
   gap: 12px;
-  position: relative; /* "no" button will move within this box once absolute */
+  position: relative;
   align-items: center;
 
   width: min(92vw, 360px);
-  height: 64px;              /* fixed height prevents vertical jump */
-  overflow: hidden;          /* crucial: prevents scrollbars from movement */
+  height: 64px;
+  overflow: hidden;
   justify-content: center;
+
+  /* Add a little inner breathing room so the button never kisses the edge */
+  padding: 6px;
+  box-sizing: border-box;
 }
 
 .yes-button,

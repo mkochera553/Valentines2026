@@ -52,11 +52,13 @@ function noChange() {
   const btnW = noRectAbs.width;
   const btnH = noRectAbs.height;
 
-  const maxLeft = Math.max(0, parentRect.width - btnW);
-  const maxTop = Math.max(0, parentRect.height - btnH);
+  // Keep the NO button away from the container edges to avoid clipping
+  const EDGE_PADDING = 6;
 
-  // YES rect in "buttonsBox local coordinates"
-  const AVOID_PADDING = 8; // extra spacing so they don't touch
+  const maxLeft = Math.max(0, parentRect.width - btnW - EDGE_PADDING * 2);
+  const maxTop = Math.max(0, parentRect.height - btnH - EDGE_PADDING * 2);
+
+  const AVOID_PADDING = 8;
   const yesRect = {
     left: (yesRectAbs.left - parentRect.left) - AVOID_PADDING,
     top: (yesRectAbs.top - parentRect.top) - AVOID_PADDING,
@@ -64,15 +66,15 @@ function noChange() {
     bottom: (yesRectAbs.bottom - parentRect.top) + AVOID_PADDING
   };
 
-  let chosenLeft = 0;
-  let chosenTop = 0;
+  let chosenLeft = EDGE_PADDING;
+  let chosenTop = EDGE_PADDING;
 
   const MAX_TRIES = 40;
   let found = false;
 
   for (let t = 0; t < MAX_TRIES; t++) {
-    const i = Math.floor(Math.random() * (maxLeft + 1));
-    const j = Math.floor(Math.random() * (maxTop + 1));
+    const i = EDGE_PADDING + Math.floor(Math.random() * (maxLeft + 1));
+    const j = EDGE_PADDING + Math.floor(Math.random() * (maxTop + 1));
 
     const candidate = { left: i, top: j, right: i + btnW, bottom: j + btnH };
 
@@ -84,11 +86,12 @@ function noChange() {
     }
   }
 
-  // Fallback: if the box is too tight, push NO as far as possible away horizontally
   if (!found) {
     const yesCenterX = (yesRect.left + yesRect.right) / 2;
-    chosenLeft = (yesCenterX < parentRect.width / 2) ? maxLeft : 0;
-    chosenTop = Math.floor(maxTop / 2);
+    chosenLeft = (yesCenterX < parentRect.width / 2)
+      ? (EDGE_PADDING + maxLeft)
+      : EDGE_PADDING;
+    chosenTop = EDGE_PADDING + Math.floor(maxTop / 2);
   }
 
   noButton.style.left = chosenLeft + "px";
