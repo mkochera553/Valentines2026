@@ -21,6 +21,10 @@ function clamp(n, min, max) {
   return Math.max(min, Math.min(max, n));
 }
 
+function rectsOverlap(a, b) {
+  return !(a.right <= b.left || a.left >= b.right || a.bottom <= b.top || a.top >= b.bottom);
+}
+
 function noChange() {
   // resize more every click (cap growth/shrink to avoid absurd sizes on mobile)
   yesScale = clamp(yesScale + YES_GROW_PER_CLICK, 1, 2.2);
@@ -39,18 +43,56 @@ function noChange() {
     noButton.style.top = (rect.top - parentRect.top) + "px";
   }
 
-  // Move *within* the buttons box so it never creates scrolling
+  // Move *within* the buttons box so it never creates scrolling,
+  // and NEVER overlap the YES button.
   const parentRect = buttonsBox.getBoundingClientRect();
-  const btnRect = noButton.getBoundingClientRect();
+  const yesRectAbs = yesButton.getBoundingClientRect();
+  const noRectAbs = noButton.getBoundingClientRect();
 
-  const maxLeft = Math.max(0, parentRect.width - btnRect.width);
-  const maxTop = Math.max(0, parentRect.height - btnRect.height);
+  const btnW = noRectAbs.width;
+  const btnH = noRectAbs.height;
 
-  const i = Math.floor(Math.random() * (maxLeft + 1));
-  const j = Math.floor(Math.random() * (maxTop + 1));
+  const maxLeft = Math.max(0, parentRect.width - btnW);
+  const maxTop = Math.max(0, parentRect.height - btnH);
 
-  noButton.style.left = i + "px";
-  noButton.style.top = j + "px";
+  // YES rect in "buttonsBox local coordinates"
+  const AVOID_PADDING = 8; // extra spacing so they don't touch
+  const yesRect = {
+    left: (yesRectAbs.left - parentRect.left) - AVOID_PADDING,
+    top: (yesRectAbs.top - parentRect.top) - AVOID_PADDING,
+    right: (yesRectAbs.right - parentRect.left) + AVOID_PADDING,
+    bottom: (yesRectAbs.bottom - parentRect.top) + AVOID_PADDING
+  };
+
+  let chosenLeft = 0;
+  let chosenTop = 0;
+
+  const MAX_TRIES = 40;
+  let found = false;
+
+  for (let t = 0; t < MAX_TRIES; t++) {
+    const i = Math.floor(Math.random() * (maxLeft + 1));
+    const j = Math.floor(Math.random() * (maxTop + 1));
+
+    const candidate = { left: i, top: j, right: i + btnW, bottom: j + btnH };
+
+    if (!rectsOverlap(candidate, yesRect)) {
+      chosenLeft = i;
+      chosenTop = j;
+      found = true;
+      break;
+    }
+  }
+
+  // Fallback: if the box is too tight, push NO as far as possible away horizontally
+  if (!found) {
+    const yesCenterX = (yesRect.left + yesRect.right) / 2;
+    chosenLeft = (yesCenterX < parentRect.width / 2) ? maxLeft : 0;
+    chosenTop = Math.floor(maxTop / 2);
+  }
+
+  noButton.style.left = chosenLeft + "px";
+  noButton.style.top = chosenTop + "px";
 
   customImage.src = "img/monkey.jpg";
 }
